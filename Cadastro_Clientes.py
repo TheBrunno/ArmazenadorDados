@@ -58,14 +58,35 @@ class Client:
         for ind, name in enumerate(__name):
             print(f'{name.ljust(25)}{self.__ind[ind]}')
             sleep(0.3)
+        print('-' * 28)
 
     def DeletarCadastro(self):
         __id = leiaInt('Digite o id: ')
+        __idsDel = []
+        __namesDel = []
         arq = open(self.__arquivo)
         for indc, line in enumerate(arq):
             if indc % 2 == 0:
-                if int(line) == __id:
-                    del line
+                line.replace('\n', '')
+                __idsDel.append(int(line))
+            else:
+                __namesDel.append(line.replace('\n', ''))
+        try:
+            pos = __idsDel.index(__id)
+        except ValueError:
+            MenuError('NAO FOI ENCONTRADO ESSE ID', '=')
+        else:
+            __edits = open(f'{self.__arquivo}', 'w')
+            del __idsDel[pos]
+            del __namesDel[pos]
+            contname = contid = 0
+            for idss in range(len(__idsDel) + len(__namesDel)):
+                if idss % 2 == 0:
+                    __edits.write(str(__idsDel[contid]))
+                    contid += 1
+                else:
+                    __edits.write(str(f'\n{__namesDel[contname]}\n'))
+                    contname += 1
 
 def menu(lst):
     print('-=' * 15)
@@ -83,5 +104,6 @@ while True:
     if op == 2:
         Usuarios.CadastroCliente()
     if op == 3:
+        Usuarios.ListarClientes()
         Usuarios.DeletarCadastro()
 
