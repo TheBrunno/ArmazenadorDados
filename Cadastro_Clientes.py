@@ -32,6 +32,10 @@ class Client:
     def __init__(self, arquivo):
         self.__arquivo = f'{arquivo}.txt'
         self.__clientes = f'{self.__arquivo}'
+        try:
+            arq = open(self.__clientes)
+        except FileNotFoundError:
+            arq = open(self.__clientes, 'x')
         self.__ind = []
         self.__indc = []
 
