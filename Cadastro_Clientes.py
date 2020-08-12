@@ -7,6 +7,12 @@ def MenuError(msg, car='='):
     print(f'  {msg}')
     print(f'\033[1;31m{car[0]}\033[m' * (tam + 4))
 
+def MenuAccept(msg, car='='):
+    tam = len(msg)
+    print(f'\033[1;34m{car[0]}' * (tam + 4))
+    print(f'  {msg}')
+    print(f'\033[1;34m{car[0]}\033[m' * (tam + 4))
+
 
 def leiaInt(msg, maxi=999, mini=0):
     while True:
@@ -37,7 +43,7 @@ class Client:
             MenuError('DIGITE UM NOME VALIDO', '=')
             nome = str(input('Nome do cliente: '))
         ind = leiaInt('ID do cliente: ')
-        while ind == 999:
+        while ind == 999 or ind == 998:
             MenuError('DIGITE OUTRO ID')
             sleep(1)
             print()
@@ -76,10 +82,33 @@ class Client:
     def DeletarCadastro(self):
         while True:
             print('\033[1;31m       999 Para sair\033[m')
+            print('\033[1;32m       998 Excluir tudo\033[m')
+            print()
             __id = leiaInt('Digite o id: ')
             __idsDel = []
             __namesDel = []
+            opc = 'X'
+            cont = 1
+            if __id == 998:
+                while True:
+                    if opc == 'S':
+                        print()
+                        MenuError('Todos os dados foram excluidos.', car='~')
+                        arqv = open(self.__clientes, 'w+')
+                        arqv.close()
+                        break
+                    if opc == 'N':
+                        MenuAccept('Nao foi excluido nenhum dado.', car='~')
+                        break
+                    else:
+                        while opc not in 'SN':
+                            if cont != 1:
+                                MenuError('DIGITE APENAS [S/N].')
+                            opc = input('Tem certeza que quer excluir todos os dados? [S/N]').strip().upper()[0]
+                            cont += 1
             if __id == 999:
+                break
+            if opc == 'S':
                 break
             with open(self.__clientes) as arq:
                 for indc, line in enumerate(arq):
@@ -88,30 +117,30 @@ class Client:
                         __idsDel.append(int(line))
                     else:
                         __namesDel.append(line.replace('\n', ''))
-
-            try:
-                pos = __idsDel.index(__id)
-            except ValueError:
-                MenuError('NAO FOI ENCONTRADO ESSE ID', '=')
-                continue
-            else:
-                __edits = open(f'{self.__arquivo}', 'w')
-                del __idsDel[pos]
-                exx = __namesDel[pos]
-                del __namesDel[pos]
-                contname = contid = 0
-                for idss in range(len(__idsDel) + len(__namesDel)):
-                    if idss % 2 == 0:
-                        __edits.write(str(__idsDel[contid]))
-                        contid += 1
-                    else:
-                        __edits.write(str(f'\n{__namesDel[contname]}\n'))
-                        contname += 1
-                sleep(1)
-                print(f'\033[1;31mO cliente \'{exx.title()}\' foi excluido com sucesso\033[m')
-                sleep(2)
-                __edits.close()
-                break
+            if opc not in 'SN':
+                try:
+                    pos = __idsDel.index(__id)
+                except ValueError:
+                    MenuError('NAO FOI ENCONTRADO ESSE ID', '=')
+                    continue
+                else:
+                    __edits = open(f'{self.__arquivo}', 'w')
+                    del __idsDel[pos]
+                    exx = __namesDel[pos]
+                    del __namesDel[pos]
+                    contname = contid = 0
+                    for idss in range(len(__idsDel) + len(__namesDel)):
+                        if idss % 2 == 0:
+                            __edits.write(str(__idsDel[contid]))
+                            contid += 1
+                        else:
+                            __edits.write(str(f'\n{__namesDel[contname]}\n'))
+                            contname += 1
+                    sleep(1)
+                    print(f'\033[1;31mO cliente \'{exx.title()}\' foi excluido com sucesso\033[m')
+                    sleep(2)
+                    __edits.close()
+                    break
 
 def menu(lst):
     print('-=' * 15)
@@ -121,9 +150,9 @@ def menu(lst):
 
 def NameMenu(msg, car='='):
     tam = len(msg)
-    print(f'{car}' * (tam + 4))
+    print(f'\033[1;33m{car}' * (tam + 4))
     print(f'  {msg}')
-    print(f'{car}' * (tam + 4))
+    print(f'\033[1;33m{car}\033[m' * (tam + 4))
 
 while True:
     Usuarios = Client('Usuarios')
