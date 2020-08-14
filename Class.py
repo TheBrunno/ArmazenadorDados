@@ -149,6 +149,7 @@ class Client:
                             __edits.write(str(f'\n{__namesDel[contname]}\n'))
                             contname += 1
                     sleep(1)
+                    exx = exx.replace('&', '')
                     print(f'O cliente \'{exx.title()}\' foi excluido com sucesso')
                     sleep(2)
                     __edits.close()
@@ -163,29 +164,36 @@ class Client:
     def MarcarCliente(self):
         __ids = []
         __name = []
-        __slc = []
-        cont = 0
+        verdade = False
+        print('         999 Para')
+        print()
         marc = leiaInt('Pelo ID, qual cliente quer marcar: ')
+        if marc == 999:
+            return
         with open(self.__clientes, 'r') as arqv:
             for enu, line in enumerate(arqv):
                 if enu % 2 == 0:
-                    __ids.append(int(line.replace('\n', '')))
-                    if marc == (int(line.replace('\n', ''))):
-                        cont += 1
-                else:
-                    if cont == 1:
-                        cont -= 1
-                        __slc.append(line.replace('\n', ''))
-                        continue
+                    line = line.replace('\n', '')
+                    if int(line) == marc:
+                        verdade = True
+                        __ids.append(int(line))
+                    else:
+                        __ids.append(int(line))
+                elif enu % 2 == 1:
+                    if verdade:
+                        line = line.replace('\n', '')
+                        __name.append(f'&{line}')
+                        verdade = False
                     else:
                         __name.append(line.replace('\n', ''))
-        with open(self.__clientes, 'r') as arqvo:
-            for enum, linha in enumerate(arqvo):
-                if enum % 2 == 1:
-                    for selected in __slc:
-                        if linha.replace('\n', '') == selected:
-                            with open(self.__clientes, 'a') as editArqv:
-                                del linha
-                                editArqv.write(f'&{selected}\n')
-                                print('Marcado')
-                            
+
+        with open(self.__clientes, 'w+') as Arqvo:
+            contId = contName = 0
+            for cont in range(len(__name) + len(__ids)):
+                if cont % 2 == 0:
+                    Arqvo.write(f'{__ids[contId]}')
+                    contId += 1
+                else:
+                    Arqvo.write(f'\n{__name[contName]}\n')
+                    contName += 1
+

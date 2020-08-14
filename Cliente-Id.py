@@ -24,19 +24,20 @@ while True:
         Usuarios.ListarClientes()
         Usuarios.DeletarCadastro()
     elif op == 4:
-        sleep(1)
-        lstta = ['EDITAR CLIENTES', 'Marcar um cliente', 'Organizar os Cadastros de forma crescente', 'Organizar os Cadastros de forma decrescente', 'Voltar para o menu principal']
-        menu(lstta)
-        opc = leiaInt('Qual sua opção: ', len(lstta) - 1, 1)
-        if opc == 1:
-            Usuarios.ListarClientes()
-            Usuarios.MarcarCliente()
-        elif opc == 2:
-            pass
-        elif opc == 3:
-            pass
-        elif opc == 4:
-            pass
+        while True:
+            sleep(1)
+            lstta = ['EDITAR CLIENTES', 'Marcar um cliente', 'Organizar os Cadastros de forma crescente', 'Organizar os Cadastros de forma decrescente', 'Voltar para o menu principal']
+            menu(lstta)
+            opc = leiaInt('Qual sua opção: ', len(lstta) - 1, 1)
+            if opc == 1:
+                Usuarios.ListarClientes()
+                Usuarios.MarcarCliente()
+            elif opc == 2:
+                pass
+            elif opc == 3:
+                pass
+            elif opc == 4:
+                break
     elif op == 5:
         sleep(1)
         MenuError(lista[5], car='-')
