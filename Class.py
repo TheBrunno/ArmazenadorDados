@@ -66,14 +66,21 @@ class Client:
             sleep(2)
         arqread.close()
 
-    def ListarClientes(self):
+    def ListarClientes(self, __mostrarMarrc=True, __mostrarNormal=True):
         __name = []
         with open(self.__clientes, 'r') as arqv:
             for ind, line in enumerate(arqv):
-                if ind % 2 == 0:
-                    self.__ind.append(line.replace('\n', ''))
-                else:
-                    __name.append(line.replace('\n', '').title())
+                if ind % 2 == 1:
+                    if line[0] == '&':
+                        if __mostrarMarrc:
+                            __name.append(line.replace('\n', '').title())
+                    else:
+                        if __mostrarMarrc and __mostrarNormal:
+                            self.__ind.pop()
+                        if __mostrarNormal:
+                            __name.append(line.replace('\n', '').title())
+                elif ind % 2 == 0:
+                        self.__ind.append(line.replace('\n', ''))
             print(' Nome'.ljust(40), end='')
             print('Id ')
             contat = 0
@@ -83,6 +90,7 @@ class Client:
                     name = name.replace('&', '')
                     print(f'|{name.ljust(40)}{self.__ind[ind]}|')
                     print('-' * 45)
+                    sleep(0.3)
                 elif self.__ind[ind - 1] != line.replace('&', ''):
                     print(f'{name.ljust(40)}{self.__ind[ind]}')
                     sleep(0.3)
@@ -161,6 +169,27 @@ class Client:
     def OrganizarDecrescente(self):
         pass
 
+    def DesmarcarCliente(self):
+        passou = False
+        print('         999 Para')
+        Desmarc = leiaInt('Pelo ID, qual cliente desmarcar: ')
+        if Desmarc == 999:
+            return
+        with open(self.__clientes, 'r') as DesmarcArquivo:
+            for enum, line in enumerate(DesmarcArquivo):
+                if enum % 2 == 0:
+                    if Desmarc == int(line.replace('\n', '')):
+                        passou = True
+                elif enum % 2 == 1:
+                    if passou:
+                        if line[0] == '&':
+                            line.replace('&', '')
+                            passou = False
+                        else:
+                            MenuError('Esse ID não foi encontrado.')
+                            return
+
+
     def MarcarCliente(self):
         __ids = []
         __name = []
@@ -186,7 +215,6 @@ class Client:
                         verdade = False
                     else:
                         __name.append(line.replace('\n', ''))
-
         with open(self.__clientes, 'w+') as Arqvo:
             contId = contName = 0
             for cont in range(len(__name) + len(__ids)):
