@@ -165,7 +165,6 @@ class Client:
 
 
     def DesmarcarCliente(self):
-        global __Desmarcado
         while True:
             print('         999 Para')
             __names = []
@@ -187,12 +186,12 @@ class Client:
                             line = line.replace('\n', '')
                             igual = False
                             __names.append(line.replace('&', ''))
+                            __Desmarcado = line.replace('&', '')
                         else:
                             __names.append(line.replace('\n', ''))
             with open(self.__clientes, 'w+') as Editable:
                 for cont in range(0, len(__names)):
                     Editable.write(f'{str(__ids[cont])}\n')
-                    __Desmarcado = __names[cont]
                     Editable.write(f'{str(__names[cont])}\n')
             try:
                 __ids.index(Desmarc)
