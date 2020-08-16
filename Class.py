@@ -35,8 +35,6 @@ class Client:
             open(self.__clientes)
         except FileNotFoundError:
             open(self.__clientes, 'x')
-        self.__ind = []
-        self.__indc = []
 
     def CadastroCliente(self):
         nome = str(input('Nome do cliente: ')).title()
@@ -68,34 +66,36 @@ class Client:
 
     def ListarClientes(self, __mostrarMarrc=True, __mostrarNormal=True):
         __name = []
+        __ind = []
         with open(self.__clientes, 'r') as arqv:
             for ind, line in enumerate(arqv):
                 if ind % 2 == 1:
                     if line[0] == '&':
                         if __mostrarMarrc:
                             __name.append(line.replace('\n', '').title())
+                        else:
+                            __ind.pop()
                     else:
-                        if __mostrarMarrc and __mostrarNormal:
-                            self.__ind.pop()
-                        if __mostrarNormal:
+                        if __mostrarMarrc and not __mostrarNormal:
+                            __ind.pop()
+                        elif __mostrarNormal and not __mostrarMarrc:
+                            __name.append(line.replace('\n', '').title())
+                        else:
                             __name.append(line.replace('\n', '').title())
                 elif ind % 2 == 0:
-                        self.__ind.append(line.replace('\n', ''))
+                    __ind.append(line.replace('\n', ''))
             print(' Nome'.ljust(40), end='')
             print('Id ')
-            contat = 0
             for ind, name in enumerate(__name):
-                if name[0].replace('\n', '') == '&' and contat == 0:
+                if name[0].replace('\n', '') == '&':
                     print('_' * 45)
                     name = name.replace('&', '')
-                    print(f'|{name.ljust(40)}{self.__ind[ind]}|')
+                    print(f'|{name.ljust(40)}{__ind[ind]}|')
                     print('-' * 45)
                     sleep(0.3)
-                elif self.__ind[ind - 1] != line.replace('&', ''):
-                    print(f'{name.ljust(40)}{self.__ind[ind]}')
+                elif __ind[ind] != line.replace('&', ''):
+                    print(f'{name.ljust(40)}{__ind[ind]}')
                     sleep(0.3)
-                else:
-                    continue
             print()
             print()
 
@@ -163,65 +163,82 @@ class Client:
                     __edits.close()
                     break
 
-    def OrganizarCrescente(self):
-        pass
-
-    def OrganizarDecrescente(self):
-        pass
 
     def DesmarcarCliente(self):
-        passou = False
-        print('         999 Para')
-        Desmarc = leiaInt('Pelo ID, qual cliente desmarcar: ')
-        if Desmarc == 999:
-            return
-        with open(self.__clientes, 'r') as DesmarcArquivo:
-            for enum, line in enumerate(DesmarcArquivo):
-                if enum % 2 == 0:
-                    if Desmarc == int(line.replace('\n', '')):
-                        passou = True
-                elif enum % 2 == 1:
-                    if passou:
-                        if line[0] == '&':
-                            line.replace('&', '')
-                            passou = False
+        global __Desmarcado
+        while True:
+            print('         999 Para')
+            __names = []
+            __ids = []
+            igual = False
+            Desmarc = leiaInt('Pelo ID, qual cliente quer desmarcar: ')
+            if Desmarc == 999:
+                return
+            with open(self.__clientes, 'r') as DesmarcArquivo:
+                for enum, line in enumerate(DesmarcArquivo):
+                    if enum % 2 == 0:
+                        if int(line.replace('\n', '')) == Desmarc:
+                            __ids.append(int(line.replace('\n', '')))
+                            igual = True
                         else:
-                            MenuError('Esse ID não foi encontrado.')
-                            return
-
+                            __ids.append(int(line.replace('\n', '')))
+                    elif enum % 2 == 1:
+                        if igual:
+                            line = line.replace('\n', '')
+                            igual = False
+                            __names.append(line.replace('&', ''))
+                        else:
+                            __names.append(line.replace('\n', ''))
+            with open(self.__clientes, 'w+') as Editable:
+                for cont in range(0, len(__names)):
+                    Editable.write(f'{str(__ids[cont])}\n')
+                    __Desmarcado = __names[cont]
+                    Editable.write(f'{str(__names[cont])}\n')
+            try:
+                __ids.index(Desmarc)
+            except:
+                MenuError('ID NÃO ENCONTRADO')
+            else:
+                print(f'O cliente \'{__Desmarcado}\' foi desmarcado com sucesso')
+                break
 
     def MarcarCliente(self):
-        __ids = []
-        __name = []
-        verdade = False
-        print('         999 Para')
-        print()
-        marc = leiaInt('Pelo ID, qual cliente quer marcar: ')
-        if marc == 999:
-            return
-        with open(self.__clientes, 'r') as arqv:
-            for enu, line in enumerate(arqv):
-                if enu % 2 == 0:
-                    line = line.replace('\n', '')
-                    if int(line) == marc:
-                        verdade = True
-                        __ids.append(int(line))
-                    else:
-                        __ids.append(int(line))
-                elif enu % 2 == 1:
-                    if verdade:
+        global __Marcado
+        while True:
+            __ids = []
+            __name = []
+            verdade = False
+            print('         999 Para')
+            marc = leiaInt('Pelo ID, qual cliente quer marcar: ')
+            if marc == 999:
+                return
+            with open(self.__clientes, 'r') as arqv:
+                for enu, line in enumerate(arqv):
+                    if enu % 2 == 0:
                         line = line.replace('\n', '')
-                        __name.append(f'&{line}')
-                        verdade = False
-                    else:
-                        __name.append(line.replace('\n', ''))
-        with open(self.__clientes, 'w+') as Arqvo:
-            contId = contName = 0
-            for cont in range(len(__name) + len(__ids)):
-                if cont % 2 == 0:
-                    Arqvo.write(f'{__ids[contId]}')
-                    contId += 1
-                else:
-                    Arqvo.write(f'\n{__name[contName]}\n')
-                    contName += 1
+                        if int(line) == marc:
+                            verdade = True
+                            __ids.append(int(line))
+                        else:
+                            __ids.append(int(line))
+                    elif enu % 2 == 1:
+                        if verdade:
+                            line = line.replace('\n', '')
+                            __Marcado = f'&{line}'
+                            __name.append(__Marcado)
+                            __Marcado = __Marcado.replace('&', '')
+                            verdade = False
+                        else:
+                            __name.append(line.replace('\n', ''))
+            with open(self.__clientes, 'w+') as Arqvo:
+                for cont in range(len(__name)):
+                    Arqvo.write(f'{__ids[cont]}')
+                    Arqvo.write(f'\n{__name[cont]}\n')
+            try:
+                __ids.index(marc)
+            except:
+                MenuError('ID NÃO ENCONTRADO')
+            else:
+                print(f'O cliente \'{__Marcado}\' foi marcado com sucesso')
+                break
 

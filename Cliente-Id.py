@@ -1,7 +1,6 @@
 from time import sleep
 from Class import *
 
-
 while True:
     Usuarios = Client('Usuarios')
     lista = ['MENU PRINCIPAL', 'Ver Clientes Cadastrados', 'Cadastrar Novos Clientes', 'Deletar Cadastro', 'Editar Cadastros','Sair do Sistema']
@@ -26,7 +25,7 @@ while True:
     elif op == 4:
         while True:
             sleep(1)
-            lstta = ['EDITAR CLIENTES', 'Marcar um cliente', 'Desmarcar um cliente','Organizar os Cadastros de forma crescente', 'Organizar os Cadastros de forma decrescente', 'Voltar para o menu principal']
+            lstta = ['EDITAR CLIENTES', 'Marcar um cliente', 'Desmarcar um cliente', 'Voltar para o menu principal']
             menu(lstta)
             opc = leiaInt('Qual sua opção: ', len(lstta) - 1, 1)
             if opc == 1:
@@ -36,10 +35,8 @@ while True:
                 Usuarios.ListarClientes(True, False)
                 Usuarios.DesmarcarCliente()
             elif opc == 3:
-                pass
-            elif opc == 4:
-                pass
-            elif opc == 5:
+                sleep(1)
+                print()
                 break
     elif op == 5:
         sleep(1)
